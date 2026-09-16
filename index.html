@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sony WH-1000XM6 | Silence, perfected.</title>
+  <meta name="description" content="Experience Sony WH-1000XM6 wireless noise-cancelling headphones. Re-engineered with Dual QN3 processors, 40mm bio-cellulose drivers, and industry-leading adaptive silence." />
+  
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="bg-void text-white font-sans antialiased overflow-x-hidden selection:bg-sony-blue selection:text-white">
+
+  <!-- Ambient Sound Stage (Hidden Audio Element / Web Audio Synth Controller) -->
+  <div id="audio-status-banner" class="sr-only" aria-live="polite">Audio effects available</div>
+
+  <!-- PRELOADER SCREEN -->
+  <div id="preloader" class="fixed inset-0 z-50 bg-[#030303] flex flex-col items-center justify-center transition-opacity duration-700">
+    <div class="flex flex-col items-center max-w-sm px-6 text-center">
+      <div class="sony-brand-logo mb-6 tracking-[0.35em] text-white/90 text-sm font-semibold uppercase">SONY</div>
+      <div class="text-2xl font-bold tracking-tight text-white mb-2">WH-1000XM6</div>
+      <div class="text-xs uppercase tracking-widest text-white/40 mb-8">Flagship Noise Cancelling</div>
+      
+      <!-- Audio Wave Loader Animation -->
+      <div class="audio-wave-bars flex items-center justify-center gap-1.5 h-10 mb-6" aria-hidden="true">
+        <span class="bar bar-1"></span>
+        <span class="bar bar-2"></span>
+        <span class="bar bar-3"></span>
+        <span class="bar bar-4"></span>
+        <span class="bar bar-5"></span>
+        <span class="bar bar-6"></span>
+        <span class="bar bar-7"></span>
+      </div>
+
+      <!-- Loading Progress -->
+      <div class="w-48 h-[2px] bg-white/10 rounded-full overflow-hidden mb-3 relative">
+        <div id="loader-progress-bar" class="h-full bg-gradient-to-r from-sony-blue to-sony-cyan w-0 transition-all duration-150"></div>
+      </div>
+      <div class="flex items-center justify-between w-48 text-[11px] font-mono text-white/40">
+        <span>INITIALIZING</span>
+        <span id="loader-percent">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SONY PREMIUM GLASSMORPHISM NAVBAR -->
+  <header id="site-header">
+    <div class="w-full flex items-center justify-between">
+      <!-- Left: Hamburger Menu Button & SONY Wordmark -->
+      <div class="flex items-center gap-3 relative" id="category-menu-container">
+        <!-- Hamburger Menu Button (three horizontal lines, 20px, subtle soft cyan hover glow) -->
+        <button
+          id="category-menu-btn"
+          class="category-hamburger-btn"
+          aria-label="Toggle Product Categories Menu"
+          aria-expanded="false"
+          aria-haspopup="true"
+          title="Browse Sony Categories"
+        >
+          <svg class="category-hamburger-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+
+        <!-- Bold SONY Wordmark in uppercase tracking-wide -->
+        <a href="#overview" class="sony-wordmark">
+          SONY
+        </a>
+
+        <!-- DROPDOWN PANEL (Floating card directly beneath navbar, left-aligned under hamburger) -->
+        <div
+          id="category-dropdown-menu"
+          class="category-dropdown-panel"
+          role="menu"
+          aria-orientation="vertical"
+        >
+          <ul class="category-list" role="none">
+            <li role="none">
+              <button
+                class="category-item-btn"
+                role="menuitem"
+                data-category="headphones"
+                aria-current="true"
+              >
+                <span class="category-dot" aria-hidden="true"></span>
+                <span>HEADPHONES</span>
+              </button>
+            </li>
+            <li role="none">
+              <button
+                class="category-item-btn"
+                role="menuitem"
+                data-category="camera"
+                aria-current="false"
+              >
+                <span class="category-dot" aria-hidden="true"></span>
+                <span>CAMERA</span>
+              </button>
+            </li>
+            <li role="none">
+              <button
+                class="category-item-btn"
+                role="menuitem"
+                data-category="phones"
+                aria-current="false"
+              >
+                <span class="category-dot" aria-hidden="true"></span>
+                <span>PHONES</span>
+              </button>
+            </li>
+          </ul>
+          <!-- Subtle cut-off dark-to-content bottom fade -->
+          <div class="category-dropdown-fade" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <!-- Right: Active Product-Name Pill Badge & Sound/CTA -->
+      <div class="flex items-center gap-3">
+        <!-- Pill-shaped active product name badge (auto-updates to active product name) -->
+        <div id="nav-product-pill" class="product-pill-badge" title="Currently Active Product">
+          WH-1000XM6
+        </div>
+
+        <button id="sound-toggle-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white/70 hover:text-white text-xs transition-all" title="Toggle Interactive Audio Experience" aria-label="Toggle Sound">
+          <svg id="sound-icon-on" class="w-3.5 h-3.5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          </svg>
+          <svg id="sound-icon-off" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+          </svg>
+          <span id="sound-btn-text" class="hidden sm:inline text-[11px] uppercase tracking-wider font-mono">Audio Off</span>
+        </button>
+
+        <button id="open-preorder-btn" class="nav-cta-btn relative group overflow-hidden px-4 py-1.5 rounded-full text-xs font-semibold text-white transition-all shadow-lg">
+          <span class="relative z-10 flex items-center gap-1.5">
+            <span id="nav-cta-label">Pre-order</span>
+            <span id="nav-cta-price" class="text-white/60 font-normal">| $449</span>
+          </span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Fullscreen Transparent Backdrop Click-Catcher (z-45) -->
+  <div id="dropdown-backdrop" class="dropdown-backdrop" aria-hidden="true"></div>
+
+  <!-- MAIN SCROLLYTELLING CONTAINER (PURE PRODUCT ANIMATION ONLY, ZERO OVERLAYS) -->
+  <section id="scrollytelling-container" class="relative w-full" style="height: 480vh;">
+    <!-- Pinned Sticky Viewport: Pure edge-free product canvas -->
+    <div id="sticky-viewport" class="sticky top-0 w-full h-screen overflow-hidden bg-[#030303] flex items-center justify-center">
+      <!-- Branded Loading Progress Indicator on category swap -->
+      <div id="category-swap-loader"></div>
+
+      <!-- HTML5 Canvas for Image Sequence (Pure Visual Only) -->
+      <canvas id="product-canvas" class="relative z-10 w-full h-full object-contain block"></canvas>
+    </div>
+  </section>
+
+  <!-- STORY ACTS SECTIONS: IN NORMAL DOCUMENT FLOW BENEATH CANVAS -->
+  <section id="story-acts-container" class="story-acts-container">
+    
+    <!-- ACT 1: HERO & VISION -->
+    <div id="act-hero" class="story-act-block">
+      <div class="story-act-inner">
+        <div id="act-hero-tag" class="act-eyebrow-tag">
+          <span class="w-1.5 h-1.5 rounded-full bg-sony-cyan animate-pulse"></span>
+          The Next Standard in Silence
+        </div>
+        <h2 id="act-hero-title" class="act-heading">
+          Sony WH-1000XM6
+        </h2>
+        <p id="act-hero-subtitle" class="act-subheading gradient-text">
+          Silence, perfected.
+        </p>
+        <p id="act-hero-desc" class="act-description">
+          Flagship wireless noise cancelling, re-engineered for a world that never stops. Featuring the breakthrough Dual QN3 processor and 40mm bio-cellulose drivers.
+        </p>
+      </div>
+    </div>
+
+    <!-- ACT 2: ARCHITECTURE & OPTICS / ENGINEERING REVEAL -->
+    <div id="act-engineering" class="story-act-block">
+      <div class="story-act-inner">
+        <div id="act-2-tag" class="act-eyebrow-tag">
+          <span class="w-2 h-0.5 bg-sony-cyan"></span>
+          Engineering Reveal
+        </div>
+        <h2 id="act-2-title" class="act-heading">
+          Precision-engineered for silence.
+        </h2>
+        <p id="act-2-desc-1" class="act-description">
+          Custom drivers, sealed acoustic chambers, and optimized airflow deliver studio-grade clarity.
+        </p>
+        <p id="act-2-desc-2" class="act-subcopy">
+          Every single mechanical component is tuned for structural acoustic balance, instantaneous transient response, and weightless all-day comfort.
+        </p>
+        <div id="act-2-specs" class="act-specs-grid">
+          <div class="act-spec-item">
+            <span class="act-spec-label">Chassis</span>
+            <span class="act-spec-val">Magnesium Die-cast</span>
+          </div>
+          <div class="act-spec-item">
+            <span class="act-spec-label">Acoustics</span>
+            <span class="act-spec-val">Dual-Port Cavity</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACT 3: CORE INTELLIGENCE / ACOUSTIC ISOLATION -->
+    <div id="act-core" class="story-act-block">
+      <div class="story-act-inner">
+        <div id="act-3-tag" class="act-eyebrow-tag">
+          <span class="w-2 h-0.5 bg-sony-cyan"></span>
+          Acoustic Isolation
+        </div>
+        <h2 id="act-3-title" class="act-heading">
+          Adaptive noise cancelling, redefined.
+        </h2>
+        <ul id="act-3-bullets" class="act-bullets-list">
+          <li class="flex items-start gap-2.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-sony-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white font-medium">12-Microphone Array</strong> captures ambient sound in full spherical 360°.</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-sony-cyan mt-2 flex-shrink-0"></span>
+            <span><strong class="text-white font-medium">Dual QN3 Processors</strong> calculate anti-noise phase at 700,000 cycles per second.</span>
+          </li>
+          <li class="flex items-start gap-2.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-sony-cyan mt-2 flex-shrink-0"></span>
+            <span>Your music stays pure—airplanes, subway rumbles, and voices vanish.</span>
+          </li>
+        </ul>
+        <div id="act-3-chip" class="act-chip-card">
+          <span class="text-sony-cyan">QN3 REAL-TIME INVERSION</span>
+          <span class="text-green-400 font-bold">-38 dB NOISE FLOOR</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACT 4: HERITAGE & SENSORY SENSES -->
+    <div id="act-sensory" class="story-act-block">
+      <div class="story-act-inner">
+        <div id="act-4-tag" class="act-eyebrow-tag">
+          <span class="w-2 h-0.5 bg-sony-cyan"></span>
+          Audiophile Heritage
+        </div>
+        <h2 id="act-4-title" class="act-heading">
+          Immersive, lifelike sound.
+        </h2>
+        <p id="act-4-desc-1" class="act-description">
+          Specially engineered 40mm bio-cellulose drivers unlock micro-detail, deep sub-bass texture, and expansive spatial separation in every track.
+        </p>
+        <p id="act-4-desc-2" class="act-subcopy">
+          Edge-AI DSEE Extreme™ upscales compressed digital audio in real time, dynamically restoring harmonic overtones lost in compression.
+        </p>
+        <div id="act-4-badges" class="act-badges-row">
+          <span class="act-feature-pill">LDAC 990kbps</span>
+          <span class="act-feature-pill">Hi-Res Audio Wireless</span>
+          <span class="act-feature-pill">360 Reality Audio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACT 5: REASSEMBLY & FLAGSHIP CTA -->
+    <div id="act-reassemble" class="story-act-block">
+      <div class="story-act-inner text-center flex flex-col items-center">
+        <div id="act-5-tag" class="act-eyebrow-tag">
+          The Flagship Experience
+        </div>
+        <h2 id="act-5-title" class="act-heading text-4xl sm:text-6xl">
+          Hear everything.<br />Feel nothing else.
+        </h2>
+        <p id="act-5-desc" class="act-description max-w-xl text-center">
+          WH-1000XM6. Designed for focus, crafted for comfort. Engineered for airports, offices, and everything in between.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
+          <button id="act-5-cta-btn" class="trigger-preorder-modal px-8 py-3.5 rounded-full font-semibold text-sm text-white bg-gradient-to-r from-sony-blue to-sony-cyan hover:opacity-95 shadow-xl transition-all transform hover:-translate-y-0.5">
+            Experience WH-1000XM6
+          </button>
+          <a href="#specs" class="px-6 py-3.5 rounded-full font-medium text-sm text-white/80 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 transition-all">
+            See full specs &darr;
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- SECTION 2: INTERACTIVE ACTIVE NOISE CANCELLATION (ANC) SIMULATOR -->
+  <section id="anc-demo" class="relative py-28 px-6 md:px-12 bg-[#050505] border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+      
+      <!-- Section Header -->
+      <div class="max-w-3xl mb-16">
+        <div class="inline-flex items-center gap-2 text-sony-cyan text-xs font-mono uppercase tracking-widest mb-3">
+          <span class="w-2 h-0.5 bg-sony-cyan"></span>
+          Intelligent Anti-Noise Engine
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
+          Experience silence in real-time.
+        </h2>
+        <p class="text-white/60 text-base leading-relaxed">
+          The Dual QN3 processor analyzes ambient noise 700,000 times a second and produces an exact inverted anti-phase wave that cancels external chaos before it reaches your ear canal.
+        </p>
+      </div>
+
+      <!-- Interactive ANC Playground Card -->
+      <div class="glass-card rounded-3xl p-6 sm:p-10 border border-white/10 relative overflow-hidden">
+        
+        <!-- Controls Bar -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 pb-8 border-b border-white/10">
+          
+          <!-- Mode Selector -->
+          <div>
+            <label class="block text-xs font-mono uppercase tracking-wider text-white/50 mb-3">
+              1. Noise Cancelling Mode
+            </label>
+            <div class="flex gap-2">
+              <button class="anc-mode-btn active flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all" data-mode="max">
+                Max ANC
+              </button>
+              <button class="anc-mode-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all" data-mode="ambient">
+                Ambient
+              </button>
+              <button class="anc-mode-btn flex-1 py-2.5 px-3 rounded-xl text-xs font-semibold border transition-all" data-mode="off">
+                Off
+              </button>
+            </div>
+          </div>
+
+          <!-- Environment Presets -->
+          <div>
+            <label class="block text-xs font-mono uppercase tracking-wider text-white/50 mb-3">
+              2. Acoustic Environment
+            </label>
+            <div class="flex gap-2">
+              <button class="anc-env-btn active flex-1 py-2.5 px-2 rounded-xl text-[11px] font-medium border transition-all" data-env="cabin">
+                ✈️ Jet Cabin
+              </button>
+              <button class="anc-env-btn flex-1 py-2.5 px-2 rounded-xl text-[11px] font-medium border transition-all" data-env="metro">
+                🚇 Metro Train
+              </button>
+              <button class="anc-env-btn flex-1 py-2.5 px-2 rounded-xl text-[11px] font-medium border transition-all" data-env="cafe">
+                ☕ City Cafe
+              </button>
+            </div>
+          </div>
+
+          <!-- Real-time Decibel Telemetry -->
+          <div class="flex items-center justify-between lg:justify-end gap-6 bg-white/[0.02] p-3 rounded-xl border border-white/5">
+            <div>
+              <span class="block text-[10px] font-mono text-white/40 uppercase">Ambient Noise</span>
+              <span id="ambient-db-readout" class="text-xl font-bold font-mono text-amber-400">82 dB</span>
+            </div>
+            <div class="text-2xl text-white/20">&rarr;</div>
+            <div>
+              <span class="block text-[10px] font-mono text-white/40 uppercase">Sound at Eardrum</span>
+              <span id="residual-db-readout" class="text-xl font-bold font-mono text-sony-cyan">44 dB</span>
+            </div>
+            <div class="text-right">
+              <span class="block text-[10px] font-mono text-white/40 uppercase">Suppression</span>
+              <span id="reduction-db-readout" class="text-xl font-bold font-mono text-green-400">-38 dB</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Real-time Dual Wave Visualizer Canvas -->
+        <div class="relative w-full h-56 sm:h-72 bg-black/60 rounded-2xl border border-white/10 overflow-hidden mb-6">
+          <canvas id="anc-wave-canvas" class="w-full h-full block"></canvas>
+          
+          <!-- Waveform Legend Overlay -->
+          <div class="absolute top-4 left-4 flex flex-wrap items-center gap-4 text-[11px] font-mono bg-black/70 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10">
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-0.5 bg-amber-400"></span>
+              <span class="text-white/60">Ambient Wave</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-0.5 bg-sony-cyan"></span>
+              <span class="text-white/60">QN3 Anti-Noise (Phase-Inverted)</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="w-2.5 h-0.5 bg-green-400"></span>
+              <span class="text-white/60">Target Result (Cancelled)</span>
+            </div>
+          </div>
+
+          <!-- Status badge inside visualizer -->
+          <div class="absolute bottom-4 right-4 text-[11px] font-mono px-2.5 py-1 rounded bg-white/5 border border-white/10 text-white/70">
+            <span id="anc-status-indicator" class="inline-block w-1.5 h-1.5 rounded-full bg-green-400 mr-1.5 animate-pulse"></span>
+            <span id="anc-status-text">DUAL QN3 PHASE SYNC ACTIVE</span>
+          </div>
+        </div>
+
+        <!-- Explanatory note -->
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/50">
+          <p>
+            *Interactive simulation calculates the mathematical superposition: <code class="text-sony-cyan font-mono">f(t) + (-f(t)) ≈ 0</code> in real-time.
+          </p>
+          <span class="font-mono text-[11px] text-white/40">CALIBRATION RATE: 700 kHz</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: INTERACTIVE 360 REALITY AUDIO SPATIAL RADAR -->
+  <section id="spatial-demo" class="relative py-28 px-6 md:px-12 bg-[#030303] border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Column: Copy & Details -->
+        <div class="lg:col-span-5">
+          <div class="inline-flex items-center gap-2 text-sony-cyan text-xs font-mono uppercase tracking-widest mb-3">
+            <span class="w-2 h-0.5 bg-sony-cyan"></span>
+            360 Reality Audio
+          </div>
+          <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-6 leading-tight">
+            Sound that surrounds your senses.
+          </h2>
+          <p class="text-white/70 text-sm sm:text-base leading-relaxed mb-6">
+            Immerse yourself in three-dimensional sound. With personal head-related transfer function (HRTF) mapping, instruments and vocals are positioned precisely in 3D spherical space around you.
+          </p>
+          
+          <div class="space-y-4 mb-8">
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-sony-blue/20 text-sony-cyan flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">1</div>
+              <div>
+                <h3 class="text-white font-medium text-sm">Dynamic Head Tracking</h3>
+                <p class="text-white/50 text-xs">Acoustic space stays anchored to your environment even as you turn your head.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-3">
+              <div class="w-6 h-6 rounded-full bg-sony-blue/20 text-sony-cyan flex items-center justify-center text-xs font-bold mt-0.5 flex-shrink-0">2</div>
+              <div>
+                <h3 class="text-white font-medium text-sm">Object-Based Spatialization</h3>
+                <p class="text-white/50 text-xs">Audio objects map to individual spherical vectors with microsecond phase alignment.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl bg-white/[0.02] border border-white/10 flex items-center justify-between text-xs font-mono">
+            <span class="text-white/60">ACTIVE ORB ANGLE: <span id="spatial-angle-display" class="text-sony-cyan font-bold">45°</span></span>
+            <span class="text-white/60">DISTANCE: <span id="spatial-distance-display" class="text-sony-cyan font-bold">1.2m</span></span>
+          </div>
+        </div>
+
+        <!-- Right Column: Interactive 360 Radar Interface -->
+        <div class="lg:col-span-7 flex flex-col items-center">
+          <div class="relative w-full max-w-md aspect-square rounded-full border border-white/10 bg-gradient-to-b from-white/[0.02] to-transparent p-6 flex items-center justify-center shadow-2xl">
+            
+            <!-- Concentric Radar Rings -->
+            <div class="absolute inset-8 rounded-full border border-white/5 pointer-events-none"></div>
+            <div class="absolute inset-20 rounded-full border border-white/5 pointer-events-none"></div>
+            <div class="absolute inset-32 rounded-full border border-white/10 border-dashed pointer-events-none"></div>
+            
+            <!-- Center Listener Icon -->
+            <div class="z-10 flex flex-col items-center pointer-events-none">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-tr from-sony-blue to-sony-cyan flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                </svg>
+              </div>
+              <span class="text-[10px] font-mono text-white/60 mt-1 uppercase">Listener</span>
+            </div>
+
+            <!-- Draggable Audio Source Orb -->
+            <div id="spatial-orb" class="absolute z-20 w-10 h-10 -ml-5 -mt-5 rounded-full bg-sony-cyan border-2 border-white cursor-grab active:cursor-grabbing flex items-center justify-center shadow-lg shadow-cyan-400/50 transition-transform duration-75" style="top: 25%; left: 75%;">
+              <span class="w-3 h-3 rounded-full bg-white animate-ping"></span>
+            </div>
+
+            <!-- Direction Label Badges -->
+            <span class="absolute top-2 text-[10px] font-mono text-white/30 tracking-widest">FRONT (0°)</span>
+            <span class="absolute bottom-2 text-[10px] font-mono text-white/30 tracking-widest">REAR (180°)</span>
+            <span class="absolute left-2 text-[10px] font-mono text-white/30 tracking-widest">LEFT (-90°)</span>
+            <span class="absolute right-2 text-[10px] font-mono text-white/30 tracking-widest">RIGHT (+90°)</span>
+
+          </div>
+          <p class="text-xs text-white/40 mt-4 text-center">
+            *Drag the glowing cyan audio source orb around the radar to manipulate virtual instrument positioning.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: COLORWAY & FINISHES STUDIO -->
+  <section id="technology" class="relative py-28 px-6 md:px-12 bg-[#050505] border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="text-center max-w-2xl mx-auto mb-16">
+        <div class="inline-flex items-center gap-2 text-sony-cyan text-xs font-mono uppercase tracking-widest mb-3">
+          <span class="w-2 h-0.5 bg-sony-cyan"></span>
+          Tactile Craftsmanship
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
+          Three iconic finishes.
+        </h2>
+        <p class="text-white/60 text-sm sm:text-base leading-relaxed">
+          Coated in soft-fit synthetic leather with precision anodized aluminum sliders and zero-resonant composite acoustics.
+        </p>
+      </div>
+
+      <!-- Color Switcher Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        
+        <!-- Color 1: Obsidian Matte Black -->
+        <div class="color-card active glass-card p-8 rounded-3xl border border-white/10 cursor-pointer transition-all" data-color="black">
+          <div class="w-12 h-12 rounded-full bg-[#111113] border-2 border-white/20 mb-6 flex items-center justify-center shadow-inner">
+            <span class="w-3 h-3 rounded-full bg-[#222226]"></span>
+          </div>
+          <span class="text-xs font-mono uppercase text-sony-cyan tracking-wider block mb-1">Standard Issue</span>
+          <h3 class="text-xl font-bold text-white mb-2">Obsidian Matte Black</h3>
+          <p class="text-white/60 text-xs leading-relaxed mb-6">
+            Ultra-matte micro-textured black with subtle copper accents on microphone acoustic vents.
+          </p>
+          <div class="text-[11px] font-mono text-white/40 border-t border-white/10 pt-4 flex justify-between">
+            <span>FINISH: ANTI-FINGERPRINT</span>
+            <span>IN STOCK</span>
+          </div>
+        </div>
+
+        <!-- Color 2: Platinum Silver -->
+        <div class="color-card glass-card p-8 rounded-3xl border border-white/10 cursor-pointer transition-all" data-color="silver">
+          <div class="w-12 h-12 rounded-full bg-[#d0cfcb] border-2 border-white/20 mb-6 flex items-center justify-center shadow-inner">
+            <span class="w-3 h-3 rounded-full bg-[#eae9e5]"></span>
+          </div>
+          <span class="text-xs font-mono uppercase text-sony-cyan tracking-wider block mb-1">Architectural</span>
+          <h3 class="text-xl font-bold text-white mb-2">Platinum Silver</h3>
+          <p class="text-white/60 text-xs leading-relaxed mb-6">
+            Warm luminous tone inspired by Scandinavian minimalism with brushed champagne sliders.
+          </p>
+          <div class="text-[11px] font-mono text-white/40 border-t border-white/10 pt-4 flex justify-between">
+            <span>FINISH: SATIN PEARL</span>
+            <span>IN STOCK</span>
+          </div>
+        </div>
+
+        <!-- Color 3: Midnight Navy -->
+        <div class="color-card glass-card p-8 rounded-3xl border border-white/10 cursor-pointer transition-all" data-color="navy">
+          <div class="w-12 h-12 rounded-full bg-[#0d162a] border-2 border-white/20 mb-6 flex items-center justify-center shadow-inner">
+            <span class="w-3 h-3 rounded-full bg-[#1e2f5b]"></span>
+          </div>
+          <span class="text-xs font-mono uppercase text-sony-cyan tracking-wider block mb-1">Special Edition</span>
+          <h3 class="text-xl font-bold text-white mb-2">Midnight Navy</h3>
+          <p class="text-white/60 text-xs leading-relaxed mb-6">
+            Deep indigo blue that catches directional rim light with subtle gunmetal titanium highlights.
+          </p>
+          <div class="text-[11px] font-mono text-white/40 border-t border-white/10 pt-4 flex justify-between">
+            <span>FINISH: DEEP COBALT</span>
+            <span>LIMITED RUN</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECTION 5: TECHNICAL SPECIFICATION MATRIX (BENTO GRID) -->
+  <section id="specs" class="relative py-28 px-6 md:px-12 bg-[#030303] border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+      
+      <div class="max-w-3xl mb-16">
+        <div class="inline-flex items-center gap-2 text-sony-cyan text-xs font-mono uppercase tracking-widest mb-3">
+          <span class="w-2 h-0.5 bg-sony-cyan"></span>
+          Engineering Specifications
+        </div>
+        <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white mb-4">
+          Every detail accounted for.
+        </h2>
+        <p class="text-white/60 text-sm sm:text-base leading-relaxed">
+          Uncompromised electrical and acoustic specifications engineered for demanding audiophiles and frequent fliers alike.
+        </p>
+      </div>
+
+      <!-- Bento Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- Card 1: Acoustic Driver -->
+        <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="text-sony-cyan text-xs font-mono uppercase mb-2">Acoustic Engine</div>
+            <h3 class="text-2xl font-bold text-white mb-2">40mm Bio-Cellulose</h3>
+            <p class="text-white/60 text-xs leading-relaxed mb-6">
+              Custom composite diaphragm with edge-damped polyurethane surround and high-flux neodymium magnets.
+            </p>
+          </div>
+          <div class="space-y-2 border-t border-white/10 pt-4 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-white/40">Frequency Response</span><span class="text-white">4 Hz – 40,000 Hz</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Impedance</span><span class="text-white">48 Ω (1 kHz)</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Sensitivity</span><span class="text-white">105 dB / mW</span></div>
+          </div>
+        </div>
+
+        <!-- Card 2: Dual QN3 Processor -->
+        <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="text-sony-cyan text-xs font-mono uppercase mb-2">Silicon Architecture</div>
+            <h3 class="text-2xl font-bold text-white mb-2">Dual QN3 HD ANC</h3>
+            <p class="text-white/60 text-xs leading-relaxed mb-6">
+              Dual 32-bit audio DSP engines running proprietary deep neural network filtering for real-time acoustic isolation.
+            </p>
+          </div>
+          <div class="space-y-2 border-t border-white/10 pt-4 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-white/40">Sampling Frequency</span><span class="text-white">700,000 / sec</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Microphones</span><span class="text-white">12 Beamforming</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Upscaling</span><span class="text-white">DSEE Extreme™ AI</span></div>
+          </div>
+        </div>
+
+        <!-- Card 3: Battery & Fast Fuel -->
+        <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="text-sony-cyan text-xs font-mono uppercase mb-2">Power Management</div>
+            <h3 class="text-2xl font-bold text-white mb-2">40h Continuous</h3>
+            <p class="text-white/60 text-xs leading-relaxed mb-6">
+              Class-leading battery efficiency with smart wear sensors and intelligent standby auto-power off.
+            </p>
+          </div>
+          <div class="space-y-2 border-t border-white/10 pt-4 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-white/40">ANC On</span><span class="text-white">40 Hours</span></div>
+            <div class="flex justify-between"><span class="text-white/40">ANC Off</span><span class="text-white">50 Hours</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Quick Fuel</span><span class="text-white">3 min = 5 hours</span></div>
+          </div>
+        </div>
+
+        <!-- Card 4: Wireless & Codecs -->
+        <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="text-sony-cyan text-xs font-mono uppercase mb-2">Connectivity</div>
+            <h3 class="text-2xl font-bold text-white mb-2">Bluetooth 5.4 LE</h3>
+            <p class="text-white/60 text-xs leading-relaxed mb-6">
+              Multipoint connection links up to 3 devices simultaneously with seamless audio handover.
+            </p>
+          </div>
+          <div class="space-y-2 border-t border-white/10 pt-4 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-white/40">Codecs</span><span class="text-white">LDAC, LC3, AAC, SBC</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Bitrate Max</span><span class="text-white">990 kbps (Hi-Res)</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Broadcast</span><span class="text-white">Auracast™ Ready</span></div>
+          </div>
+        </div>
+
+        <!-- Card 5: Structural & Ergonomics -->
+        <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between">
+          <div>
+            <div class="text-sony-cyan text-xs font-mono uppercase mb-2">Mechanical Design</div>
+            <h3 class="text-2xl font-bold text-white mb-2">248g Weightless</h3>
+            <p class="text-white/60 text-xs leading-relaxed mb-6">
+              Silent stepless headband slider and pressure-relieving synthetic leather cushions distribute clamp force evenly.
+            </p>
+          </div>
+          <div class="space-y-2 border-t border-white/10 pt-4 text-xs font-mono">
+            <div class="flex justify-between"><span class="text-white/40">Total Weight</span><span class="text-white">248 grams</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Fold Mechanism</span><span class="text-white">Flat-Swivel Case</span></div>
+            <div class="flex justify-between"><span class="text-white/40">Sensors</span><span class="text-white">Capacitive Touch</span></div>
+          </div>
+        </div>
+
+        <!-- Card 6: What's In The Box -->
+        <div class="glass-card p-8 rounded-3xl border border-white/10 flex flex-col justify-between bg-gradient-to-br from-white/[0.04] to-transparent">
+          <div>
+            <div class="text-sony-cyan text-xs font-mono uppercase mb-2">Unboxing Contents</div>
+            <h3 class="text-2xl font-bold text-white mb-2">In The Box</h3>
+            <ul class="text-white/60 text-xs space-y-1.5 mb-6">
+              <li>• Sony WH-1000XM6 Headphones</li>
+              <li>• Magnetic Clasp Hard Shell Case</li>
+              <li>• 1.2m OFC 3.5mm Headphone Cable</li>
+              <li>• Braided USB-C Charging Cable</li>
+              <li>• In-flight Dual-Pin Gold Plug Adapter</li>
+            </ul>
+          </div>
+          <button class="trigger-preorder-modal w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-xs font-semibold text-white transition-all text-center">
+            Configure & Pre-order &rarr;
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- PRE-ORDER DRAWER / CHECKOUT MODAL -->
+  <div id="preorder-modal" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300 flex items-center justify-center p-4">
+    <!-- Backdrop -->
+    <div id="modal-backdrop" class="absolute inset-0 bg-black/80 backdrop-blur-xl"></div>
+    
+    <!-- Modal Card -->
+    <div class="relative z-10 w-full max-w-lg glass-card rounded-3xl border border-white/20 p-6 sm:p-8 shadow-2xl transform scale-95 transition-transform duration-300 bg-[#09090c]">
+      
+      <!-- Close Button -->
+      <button id="close-preorder-btn" class="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/60 hover:text-white transition-colors" aria-label="Close Preorder Modal">
+        ✕
+      </button>
+
+      <div class="text-sony-cyan text-xs font-mono uppercase tracking-widest mb-1">Official Reservation</div>
+      <h3 class="text-2xl font-bold text-white mb-1">Pre-order WH-1000XM6</h3>
+      <p class="text-white/60 text-xs mb-6">Includes 30-day risk-free home audition, free global express shipping, and 2-year warranty.</p>
+
+      <!-- Color Selection in Modal -->
+      <div class="mb-6">
+        <label class="block text-xs font-mono text-white/50 uppercase mb-2">Select Finish</label>
+        <div class="grid grid-cols-3 gap-2">
+          <button class="modal-color-opt active py-2 px-3 rounded-xl border border-white/20 text-xs text-white font-medium flex items-center gap-2" data-color="black">
+            <span class="w-3 h-3 rounded-full bg-[#111113] border border-white/40"></span>
+            <span>Black</span>
+          </button>
+          <button class="modal-color-opt py-2 px-3 rounded-xl border border-white/10 text-xs text-white/70 font-medium flex items-center gap-2" data-color="silver">
+            <span class="w-3 h-3 rounded-full bg-[#eae9e5] border border-white/40"></span>
+            <span>Silver</span>
+          </button>
+          <button class="modal-color-opt py-2 px-3 rounded-xl border border-white/10 text-xs text-white/70 font-medium flex items-center gap-2" data-color="navy">
+            <span class="w-3 h-3 rounded-full bg-[#1e2f5b] border border-white/40"></span>
+            <span>Navy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Free Laser Engraving -->
+      <div class="mb-6">
+        <label class="block text-xs font-mono text-white/50 uppercase mb-2">Personalized Laser Engraving (Free)</label>
+        <input type="text" id="engraving-input" maxlength="14" placeholder="e.g. KASWIN M. (Optional)" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-white/30 focus:outline-none focus:border-sony-cyan transition-colors" />
+      </div>
+
+      <!-- Order Breakdown -->
+      <div class="space-y-2 border-t border-white/10 py-4 text-xs font-mono mb-6">
+        <div class="flex justify-between"><span class="text-white/60">Sony WH-1000XM6 Headset</span><span class="text-white font-bold">$449.99</span></div>
+        <div class="flex justify-between"><span class="text-white/60">Magnetic Hard Case & Cables</span><span class="text-green-400">Included</span></div>
+        <div class="flex justify-between"><span class="text-white/60">Express Insured Delivery</span><span class="text-green-400">FREE</span></div>
+        <div class="flex justify-between border-t border-white/10 pt-2 text-sm">
+          <span class="text-white font-bold">Total Due Now</span>
+          <span class="text-sony-cyan font-bold">$449.99</span>
+        </div>
+      </div>
+
+      <!-- Submit Action -->
+      <button id="confirm-preorder-btn" class="w-full py-3.5 rounded-full font-semibold text-sm text-white bg-gradient-to-r from-sony-blue to-sony-cyan hover:opacity-95 shadow-xl transition-all">
+        Confirm Reservation &rarr;
+      </button>
+
+      <div id="preorder-success-msg" class="hidden mt-4 p-3 rounded-xl bg-green-500/20 border border-green-500/30 text-green-300 text-xs text-center font-mono">
+        ✓ Reservation Confirmed! Check email for batch allocation tracking.
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITORIAL SONY GLOBAL FOOTER -->
+  <footer class="relative py-16 px-6 md:px-12 bg-[#020202] border-t border-white/5 text-white/40 text-xs">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-12">
+      <div>
+        <div class="text-white font-bold text-base tracking-[0.25em] uppercase mb-2">SONY</div>
+        <p class="text-white/50 max-w-sm leading-relaxed">
+          Pioneering the science of silence. Sony WH-1000XM6 represents 45 years of audio heritage, acoustic innovation, and uncompromising design.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-8 text-xs">
+        <a href="#overview" class="hover:text-white transition-colors">Overview</a>
+        <a href="#technology" class="hover:text-white transition-colors">Engineering</a>
+        <a href="#anc-demo" class="hover:text-white transition-colors">Noise Cancelling</a>
+        <a href="#specs" class="hover:text-white transition-colors">Specifications</a>
+        <a href="#" class="hover:text-white transition-colors">Sony Support</a>
+        <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-white/30">
+      <div>&copy; 2026 Sony Corporation of America. All rights reserved.</div>
+      <div>"Sony", "WH-1000XM6", "DSEE Extreme", and "360 Reality Audio" are trademarks of Sony Group Corp.</div>
+    </div>
+  </footer>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
