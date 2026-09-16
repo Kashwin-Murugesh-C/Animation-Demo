@@ -222,15 +222,47 @@ const PRODUCTS = {
 
 // Precision Component Callouts Data for Headphones (Stage 2 & Stage 3)
 const HEADPHONES_COMPONENTS = {
+  headband: {
+    id: 'headband',
+    label: 'Headband Cushion',
+    startFrame: 91,
+    endFrame: 120,
+    box: { normX: 0.27, normY: 0.02, normW: 0.46, normH: 0.38 },
+    anchor: { normX: 0.50, normY: 0.18 },
+    card: { normX: 0.72, normY: 0.12 },
+    desc: 'Cushioned support structure distributing weight evenly to eliminate pressure points during extended listening sessions.',
+    specs: [
+      { label: 'Chassis', val: 'Seamless Magnesium Alloy Frame' },
+      { label: 'Padding', val: 'Micro-Cellular Memory Foam' },
+      { label: 'Slider', val: 'Stepless Silent Friction Slider' },
+      { label: 'Clamping Force', val: 'Calibrated 3.2N Ergonomic Fit' }
+    ]
+  },
+  cushion: {
+    id: 'cushion',
+    label: 'Ear Cushion Cover',
+    startFrame: 121,
+    endFrame: 150,
+    box: { normX: 0.74, normY: 0.42, normW: 0.22, normH: 0.50 },
+    anchor: { normX: 0.74, normY: 0.62 },
+    card: { normX: 0.46, normY: 0.52 },
+    desc: 'Soft protein-leather cushion on the outer chassis providing superior passive noise isolation and weightless all-day comfort.',
+    specs: [
+      { label: 'Material', val: 'Synthetic Soft-Fit Protein Leather' },
+      { label: 'Core Foam', val: 'Thermo-Pressure Relieving Foam' },
+      { label: 'Passive Seal', val: '-18 dB Acoustic Attenuation' },
+      { label: 'Weight', val: '28g per ear-pad' }
+    ]
+  },
   pcb: {
     id: 'pcb',
     label: 'Circuit Board (PCB)',
-    startP: 0.18,
-    endP: 0.30,
-    box: { normX: 0.30, normY: 0.16, normW: 0.38, normH: 0.60 },
-    anchor: { normX: 0.52, normY: 0.26 },
-    card: { normX: 0.68, normY: 0.20 },
-    desc: 'The central circuit board managing Bluetooth connectivity, noise-cancelling processing, and power distribution.',
+    startFrame: 171,
+    endFrame: 190,
+    box: { normX: 0.65, normY: 0.36, normW: 0.16, normH: 0.36 },
+    anchor: { normX: 0.65, normY: 0.52 },
+    card: { normX: 0.26, normY: 0.30 },
+    desc: 'The central high-density circuit board managing Bluetooth connectivity, active noise-cancelling processing, and power distribution.',
     specs: [
       { label: 'Processor', val: 'Dual Sony QN3 NC Processor' },
       { label: 'Connectivity', val: 'Bluetooth 5.3 + LE Audio & LDAC' },
@@ -241,65 +273,17 @@ const HEADPHONES_COMPONENTS = {
   driver: {
     id: 'driver',
     label: 'Acoustic Driver Unit',
-    startP: 0.32,
-    endP: 0.44,
-    box: { normX: 0.25, normY: 0.22, normW: 0.34, normH: 0.52 },
-    anchor: { normX: 0.42, normY: 0.30 },
-    card: { normX: 0.62, normY: 0.24 },
+    startFrame: 211,
+    endFrame: 250,
+    box: { normX: 0.28, normY: 0.10, normW: 0.44, normH: 0.76 },
+    anchor: { normX: 0.58, normY: 0.22 },
+    card: { normX: 0.72, normY: 0.16 },
     desc: 'Custom-tuned dynamic driver delivering wide frequency response, studio-grade clarity, and explosive dynamic range.',
     specs: [
       { label: 'Diameter', val: '40mm High-Rigidity Dome' },
       { label: 'Diaphragm', val: 'Bio-Cellulose Carbon Composite' },
       { label: 'Frequency', val: '4 Hz – 40,000 Hz' },
       { label: 'Impedance', val: '48 Ω (Active) / 16 Ω (Passive)' }
-    ]
-  },
-  cushion: {
-    id: 'cushion',
-    label: 'Ear Cushion Cover',
-    startP: 0.46,
-    endP: 0.58,
-    box: { normX: 0.14, normY: 0.18, normW: 0.32, normH: 0.58 },
-    anchor: { normX: 0.30, normY: 0.32 },
-    card: { normX: 0.50, normY: 0.18 },
-    desc: 'Soft protein-leather cushion providing superior passive noise isolation and weightless all-day comfort.',
-    specs: [
-      { label: 'Material', val: 'Synthetic Soft-Fit Protein Leather' },
-      { label: 'Core Foam', val: 'Thermo-Pressure Relieving Foam' },
-      { label: 'Passive Seal', val: '-18 dB Acoustic Attenuation' },
-      { label: 'Weight', val: '28g per ear-pad' }
-    ]
-  },
-  coil: {
-    id: 'coil',
-    label: 'Voice Coil',
-    startP: 0.60,
-    endP: 0.72,
-    box: { normX: 0.36, normY: 0.30, normW: 0.26, normH: 0.38 },
-    anchor: { normX: 0.48, normY: 0.38 },
-    card: { normX: 0.66, normY: 0.30 },
-    desc: 'Precision-wound copper coil converting electrical signals into instantaneous acoustic vibrations with ultra-low distortion.',
-    specs: [
-      { label: 'Conductor', val: 'Copper-Clad Aluminum Wire (CCAW)' },
-      { label: 'Winding', val: 'Precision 4-Layer High-Density' },
-      { label: 'Magnet', val: 'High-Gauss Neodymium Core' },
-      { label: 'Response', val: '< 0.15ms Acoustic Attack Transient' }
-    ]
-  },
-  headband: {
-    id: 'headband',
-    label: 'Headband Cushion',
-    startP: 0.74,
-    endP: 0.86,
-    box: { normX: 0.28, normY: 0.04, normW: 0.44, normH: 0.28 },
-    anchor: { normX: 0.50, normY: 0.18 },
-    card: { normX: 0.72, normY: 0.14 },
-    desc: 'Cushioned support structure distributing weight evenly to eliminate pressure points during extended listening sessions.',
-    specs: [
-      { label: 'Chassis', val: 'Seamless Magnesium Alloy Frame' },
-      { label: 'Padding', val: 'Micro-Cellular Memory Foam' },
-      { label: 'Slider', val: 'Stepless Silent Friction Slider' },
-      { label: 'Clamping Force', val: 'Calibrated 3.2N Ergonomic Fit' }
     ]
   }
 };
@@ -478,7 +462,7 @@ function resizeCanvas() {
   ctx.scale(dpr, dpr);
 
   renderCanvasFrame(state.currentFrameIndex);
-  updateCallouts(state.currentProgress);
+  updateCallouts(state.currentFrameIndex, state.currentProgress);
   updateHeroTitleDocking(state.currentProgress);
 }
 
@@ -589,7 +573,7 @@ function updateHeroTitleDocking(p) {
 }
 
 // Stage 2: Precision Component Callouts (SVG Bounding Boxes & Leader Lines)
-function updateCallouts(p) {
+function updateCallouts(currentFrame, p) {
   const overlayLayer = document.getElementById('callout-overlay-layer');
   const bbox = document.getElementById('callout-bbox');
   const line = document.getElementById('callout-line');
@@ -599,8 +583,8 @@ function updateCallouts(p) {
 
   if (!overlayLayer || !bbox || !line || !anchorDot || !card) return;
 
-  // Callouts are active ONLY on Headphones category
-  if (state.activeCategory !== 'headphones') {
+  // Callouts are active ONLY on Headphones category and during forward disassembly (p <= 0.88)
+  if (state.activeCategory !== 'headphones' || p > 0.88) {
     bbox.style.opacity = '0';
     line.style.opacity = '0';
     anchorDot.style.opacity = '0';
@@ -609,11 +593,15 @@ function updateCallouts(p) {
     return;
   }
 
-  // Find active component: STRICT RULE: Exactly ONE callout visible at any given scroll position
+  // Find active component: EXACT FRAME RANGES
+  // 91 to 120: Headband Cushion
+  // 121 to 150: Ear Cushion Cover (right side of desktop)
+  // 171 to 190: Circuit Board (PCB) (towards left side of desktop)
+  // 211 to 250: Acoustic Driver Unit
   let activeKey = null;
   for (const key of Object.keys(HEADPHONES_COMPONENTS)) {
     const comp = HEADPHONES_COMPONENTS[key];
-    if (p >= comp.startP && p <= comp.endP) {
+    if (currentFrame >= comp.startFrame && currentFrame <= comp.endFrame) {
       activeKey = key;
       break;
     }
@@ -673,7 +661,7 @@ function updateCallouts(p) {
   card.classList.add('visible');
 
   // Leader line running from label box into bounding box anchor dot
-  const lineStartX = cardX;
+  const lineStartX = cardX < anchorX ? (cardX + 160) : cardX;
   const lineStartY = cardY + 16;
 
   line.setAttribute('x1', lineStartX.toFixed(1));
@@ -694,7 +682,7 @@ function initComponentDrawer() {
   if (detailsBtn) {
     detailsBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      openComponentDrawer(state.activeCalloutKey || 'pcb');
+      openComponentDrawer(state.activeCalloutKey || 'headband');
     });
   }
 
@@ -726,7 +714,7 @@ function initComponentDrawer() {
 }
 
 function openComponentDrawer(key) {
-  const comp = HEADPHONES_COMPONENTS[key] || HEADPHONES_COMPONENTS.pcb;
+  const comp = HEADPHONES_COMPONENTS[key] || HEADPHONES_COMPONENTS.headband;
   const drawer = document.getElementById('component-detail-drawer');
   const backdrop = document.getElementById('drawer-backdrop');
   const title = document.getElementById('drawer-title');
@@ -850,7 +838,7 @@ function animationLoop() {
     }
 
     // Stage 2: Update precision component callouts
-    updateCallouts(p);
+    updateCallouts(state.currentFrameIndex, p);
   }
 
   requestAnimationFrame(animationLoop);
@@ -958,7 +946,7 @@ function switchCategory(targetCategory, pushHistory = true) {
 
     closeComponentDrawer();
     updateHeroTitleDocking(0);
-    updateCallouts(0);
+    updateCallouts(1, 0);
 
     // A. Update Document Title & Metadata
     document.title = `${product.fullName} | ${product.tagline}`;
