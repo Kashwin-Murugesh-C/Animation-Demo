@@ -413,36 +413,41 @@ body {
 }
 
 /* ==========================================================================
-   Sony Category Navigation & Glassmorphic Top Navbar
+   Sony Category Navigation & Top-Left Controls
    ========================================================================== */
 
 #site-header {
-  height: 60px;
+  height: auto;
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 1.25rem;
+  left: 1.25rem;
   z-index: 50;
   display: flex;
   align-items: center;
-  background-color: rgba(5, 5, 5, 0.85);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0 1.25rem;
-  transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  pointer-events: none;
 }
 
 @media (min-width: 768px) {
   #site-header {
-    padding: 0 2rem;
+    top: 1.5rem;
+    left: 2rem;
   }
 }
 
 #site-header.scrolled {
-  background-color: rgba(5, 5, 5, 0.92);
-  border-bottom-color: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.6);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+#category-menu-container {
+  pointer-events: auto;
 }
 
 /* Left: Hamburger Icon Button */
