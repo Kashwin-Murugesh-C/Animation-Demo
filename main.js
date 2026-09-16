@@ -463,7 +463,7 @@ function resizeCanvas() {
 
   renderCanvasFrame(state.currentFrameIndex);
   updateCallouts(state.currentFrameIndex, state.currentProgress);
-  updateHeroTitleDocking(state.currentProgress);
+  updateHeroTitleDocking(state.currentFrameIndex, state.currentProgress);
 }
 
 function getCanvasDrawMetrics() {
@@ -524,8 +524,8 @@ function renderCanvasFrame(frameIndex) {
    2b. Precision Callout Markers & Component Detail Drawer Engine
    ========================================================================== */
 
-// Stage 0: Hero Title Entrance & Docking (0–8% scroll)
-function updateHeroTitleDocking(p) {
+// Stage 0: Hero Title (00-0 to 09-0 scroll / frames 1 to 90)
+function updateHeroTitleDocking(currentFrame, p) {
   const heroTitleEl = document.getElementById('hero-docking-title');
   if (!heroTitleEl) return;
 
@@ -534,41 +534,38 @@ function updateHeroTitleDocking(p) {
     return;
   }
 
-  heroTitleEl.style.display = 'block';
+  // Only visible within the 00-0 to 09-0 scroll period (frames 1 to 90)
+  if (currentFrame <= 90 && p <= 0.30) {
+    heroTitleEl.style.display = 'block';
 
-  // 0–8% scroll range
-  if (p <= 0.08) {
-    const dockP = Math.max(0, Math.min(1, p / 0.08));
-    const ease = 1 - Math.pow(1 - dockP, 3);
+    // Normalized progress through the 00-0 to 09-0 period (0.0 to 1.0)
+    const normProgress = Math.max(0, Math.min(1, (currentFrame - 1) / 89));
 
-    const startTop = window.innerHeight * 0.5;
-    const targetTop = 76; // fixed position near top of viewport beneath navbar
+    // Smooth cubic easing for natural motion
+    const ease = normProgress * normProgress * (3 - 2 * normProgress);
+
+    // Moves from center of the headphones (50% viewport height) to top of the page (40px)
+    const startTop = window.innerHeight * 0.50;
+    const targetTop = 40; // top of the page
     const currentTop = startTop + (targetTop - startTop) * ease;
 
-    // Scale down from 1.0 to 0.40 (desktop 56px -> ~22px, mobile 32px -> ~13px)
-    const scale = 1.0 - ease * 0.60;
+    // Scale gently reduces as it moves to the top
+    const scale = 1.0 - ease * 0.35; // 1.0 -> 0.65
 
-    // Opacity gently reduces from 1.0 to 0.70
-    const opacity = 1.0 - ease * 0.30;
+    // Opacity remains 1.0 initially, then fades smoothly to 0.0 as it reaches the top (between 60% and 100% of the period)
+    let opacity = 1.0;
+    if (normProgress > 0.60) {
+      opacity = Math.max(0, 1.0 - (normProgress - 0.60) / 0.40);
+    }
 
+    heroTitleEl.textContent = 'Sony WH-1000XM6';
     heroTitleEl.style.top = `${currentTop.toFixed(1)}px`;
     heroTitleEl.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
     heroTitleEl.style.opacity = opacity.toFixed(3);
-
-    if (dockP < 0.45) {
-      heroTitleEl.textContent = 'Welcome to the SONY Headphones page.';
-      heroTitleEl.style.letterSpacing = '-0.03em';
-    } else {
-      heroTitleEl.textContent = 'SONY HEADPHONES';
-      heroTitleEl.style.letterSpacing = '0.22em';
-    }
   } else {
-    // Docked state for entire remainder of pinned scroll
-    heroTitleEl.style.top = '76px';
-    heroTitleEl.style.transform = 'translate(-50%, -50%) scale(0.40)';
-    heroTitleEl.style.opacity = '0.70';
-    heroTitleEl.textContent = 'SONY HEADPHONES';
-    heroTitleEl.style.letterSpacing = '0.22em';
+    // Past 09-0 (frame 90+): completely hidden
+    heroTitleEl.style.display = 'none';
+    heroTitleEl.style.opacity = '0';
   }
 }
 
@@ -775,41 +772,20 @@ function animationLoop() {
 
     const p = state.currentProgress;
 
-    // Stage 0: Docking Hero Title update
-    updateHeroTitleDocking(p);
-
-    // Stage 1: Canvas Entrance (Headphones 8–15% scroll)
+    // Canvas is always fully visible for pure product visual
     if (canvas) {
-      if (state.activeCategory === 'headphones') {
-        if (p < 0.08) {
-          canvas.style.opacity = '0';
-          canvas.style.transform = 'scale(0.96)';
-        } else if (p < 0.15) {
-          const enterP = (p - 0.08) / 0.07;
-          const easeEnter = 1 - Math.pow(1 - enterP, 2);
-          canvas.style.opacity = easeEnter.toFixed(3);
-          canvas.style.transform = `scale(${(0.96 + 0.04 * easeEnter).toFixed(4)})`;
-        } else {
-          canvas.style.opacity = '1';
-          canvas.style.transform = 'scale(1)';
-        }
-      } else {
-        canvas.style.opacity = '1';
-        canvas.style.transform = 'scale(1)';
-      }
+      canvas.style.opacity = '1';
+      canvas.style.transform = 'scale(1)';
     }
 
     // Frame mapping logic:
     let targetFrame;
     if (state.activeCategory === 'headphones') {
-      // Stage 1: 0.00 -> 0.15 hold frame 1
-      // Stage 2: 0.15 -> 0.88 forwards from 1 -> 300 (disassembly & exploded)
-      // Stage 4: 0.88 -> 0.95 reverse from 300 -> 1 (reassemble back to hero)
-      // Stage 4: 0.95 -> 1.00 hold static at frame 1 before releasing
-      if (p < 0.15) {
-        targetFrame = 1;
-      } else if (p <= 0.88) {
-        const normP = (p - 0.15) / (0.88 - 0.15);
+      // 0.00 -> 0.88: forward disassembly from frame 1 to 300
+      // 0.88 -> 0.95: reverse reassembly from frame 300 back to 1
+      // 0.95 -> 1.00: hold static at frame 1 before releasing
+      if (p <= 0.88) {
+        const normP = p / 0.88;
         targetFrame = 1 + normP * (TOTAL_FRAMES - 1);
       } else if (p <= 0.95) {
         const reassembleP = (p - 0.88) / 0.07;
@@ -836,6 +812,9 @@ function animationLoop() {
       state.currentFrameIndex = roundedFrame;
       renderCanvasFrame(state.currentFrameIndex);
     }
+
+    // Stage 0: Hero Title update (00-0 to 09-0 scroll)
+    updateHeroTitleDocking(state.currentFrameIndex, p);
 
     // Stage 2: Update precision component callouts
     updateCallouts(state.currentFrameIndex, p);
@@ -945,7 +924,7 @@ function switchCategory(targetCategory, pushHistory = true) {
     state.currentFrameIndex = 1;
 
     closeComponentDrawer();
-    updateHeroTitleDocking(0);
+    updateHeroTitleDocking(1, 0);
     updateCallouts(1, 0);
 
     // A. Update Document Title & Metadata
@@ -1653,7 +1632,7 @@ window.addEventListener('DOMContentLoaded', () => {
   initPreorderModal();
   initWebAudio();
   initComponentDrawer();
-  updateHeroTitleDocking(0);
+  updateHeroTitleDocking(1, 0);
 
   window.addEventListener('scroll', calculateScrollProgress, { passive: true });
   window.addEventListener('resize', resizeCanvas, { passive: true });
