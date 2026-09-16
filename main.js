@@ -674,7 +674,6 @@ function initComponentDrawer() {
   const drawer = document.getElementById('component-detail-drawer');
   const backdrop = document.getElementById('drawer-backdrop');
   const closeBtn = document.getElementById('drawer-close-btn');
-  const dismissLink = document.getElementById('drawer-dismiss-link');
 
   if (detailsBtn) {
     detailsBtn.addEventListener('click', (e) => {
@@ -685,13 +684,6 @@ function initComponentDrawer() {
 
   if (closeBtn) {
     closeBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeComponentDrawer();
-    });
-  }
-
-  if (dismissLink) {
-    dismissLink.addEventListener('click', (e) => {
       e.stopPropagation();
       closeComponentDrawer();
     });
