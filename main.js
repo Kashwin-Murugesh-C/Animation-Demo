@@ -220,6 +220,90 @@ const PRODUCTS = {
   }
 };
 
+// Precision Component Callouts Data for Headphones (Stage 2 & Stage 3)
+const HEADPHONES_COMPONENTS = {
+  pcb: {
+    id: 'pcb',
+    label: 'Circuit Board (PCB)',
+    startP: 0.18,
+    endP: 0.30,
+    box: { normX: 0.30, normY: 0.16, normW: 0.38, normH: 0.60 },
+    anchor: { normX: 0.52, normY: 0.26 },
+    card: { normX: 0.68, normY: 0.20 },
+    desc: 'The central circuit board managing Bluetooth connectivity, noise-cancelling processing, and power distribution.',
+    specs: [
+      { label: 'Processor', val: 'Dual Sony QN3 NC Processor' },
+      { label: 'Connectivity', val: 'Bluetooth 5.3 + LE Audio & LDAC' },
+      { label: 'Audio Engine', val: 'Edge-AI DSEE Extreme™ Realtime' },
+      { label: 'Clock Speed', val: '700,000 Phase Corrections/sec' }
+    ]
+  },
+  driver: {
+    id: 'driver',
+    label: 'Acoustic Driver Unit',
+    startP: 0.32,
+    endP: 0.44,
+    box: { normX: 0.25, normY: 0.22, normW: 0.34, normH: 0.52 },
+    anchor: { normX: 0.42, normY: 0.30 },
+    card: { normX: 0.62, normY: 0.24 },
+    desc: 'Custom-tuned dynamic driver delivering wide frequency response, studio-grade clarity, and explosive dynamic range.',
+    specs: [
+      { label: 'Diameter', val: '40mm High-Rigidity Dome' },
+      { label: 'Diaphragm', val: 'Bio-Cellulose Carbon Composite' },
+      { label: 'Frequency', val: '4 Hz – 40,000 Hz' },
+      { label: 'Impedance', val: '48 Ω (Active) / 16 Ω (Passive)' }
+    ]
+  },
+  cushion: {
+    id: 'cushion',
+    label: 'Ear Cushion Cover',
+    startP: 0.46,
+    endP: 0.58,
+    box: { normX: 0.14, normY: 0.18, normW: 0.32, normH: 0.58 },
+    anchor: { normX: 0.30, normY: 0.32 },
+    card: { normX: 0.50, normY: 0.18 },
+    desc: 'Soft protein-leather cushion providing superior passive noise isolation and weightless all-day comfort.',
+    specs: [
+      { label: 'Material', val: 'Synthetic Soft-Fit Protein Leather' },
+      { label: 'Core Foam', val: 'Thermo-Pressure Relieving Foam' },
+      { label: 'Passive Seal', val: '-18 dB Acoustic Attenuation' },
+      { label: 'Weight', val: '28g per ear-pad' }
+    ]
+  },
+  coil: {
+    id: 'coil',
+    label: 'Voice Coil',
+    startP: 0.60,
+    endP: 0.72,
+    box: { normX: 0.36, normY: 0.30, normW: 0.26, normH: 0.38 },
+    anchor: { normX: 0.48, normY: 0.38 },
+    card: { normX: 0.66, normY: 0.30 },
+    desc: 'Precision-wound copper coil converting electrical signals into instantaneous acoustic vibrations with ultra-low distortion.',
+    specs: [
+      { label: 'Conductor', val: 'Copper-Clad Aluminum Wire (CCAW)' },
+      { label: 'Winding', val: 'Precision 4-Layer High-Density' },
+      { label: 'Magnet', val: 'High-Gauss Neodymium Core' },
+      { label: 'Response', val: '< 0.15ms Acoustic Attack Transient' }
+    ]
+  },
+  headband: {
+    id: 'headband',
+    label: 'Headband Cushion',
+    startP: 0.74,
+    endP: 0.86,
+    box: { normX: 0.28, normY: 0.04, normW: 0.44, normH: 0.28 },
+    anchor: { normX: 0.50, normY: 0.18 },
+    card: { normX: 0.72, normY: 0.14 },
+    desc: 'Cushioned support structure distributing weight evenly to eliminate pressure points during extended listening sessions.',
+    specs: [
+      { label: 'Chassis', val: 'Seamless Magnesium Alloy Frame' },
+      { label: 'Padding', val: 'Micro-Cellular Memory Foam' },
+      { label: 'Slider', val: 'Stepless Silent Friction Slider' },
+      { label: 'Clamping Force', val: 'Calibrated 3.2N Ergonomic Fit' }
+    ]
+  }
+};
+
 // Helper: Determine category from URL hash
 function getCategoryFromHash() {
   const hash = (window.location.hash || '').replace('#', '').toLowerCase();
@@ -237,6 +321,8 @@ const state = {
   },
   isInitialReady: false,
   isTransitioning: false,
+  isDrawerOpen: false,
+  activeCalloutKey: null,
   targetProgress: 0,
   currentProgress: 0,
   currentFrameIndex: 1,
@@ -392,21 +478,16 @@ function resizeCanvas() {
   ctx.scale(dpr, dpr);
 
   renderCanvasFrame(state.currentFrameIndex);
+  updateCallouts(state.currentProgress);
+  updateHeroTitleDocking(state.currentProgress);
 }
 
-function renderCanvasFrame(frameIndex) {
-  if (!canvas || !ctx) return;
+function getCanvasDrawMetrics() {
+  if (!canvas || !canvas.parentElement) {
+    return { width: 0, height: 0, drawW: 0, drawH: 0, drawX: 0, drawY: 0 };
+  }
   const width = canvas.parentElement.clientWidth;
   const height = canvas.parentElement.clientHeight;
-
-  // Clear with void background color
-  ctx.fillStyle = '#030303';
-  ctx.fillRect(0, 0, width, height);
-
-  const img = getBestAvailableFrame(state.activeCategory, frameIndex);
-  if (!img) return;
-
-  // Standard 16:9 Aspect ratio contain calculation
   const imgAspect = 16 / 9;
   const canvasAspect = width / height;
 
@@ -423,6 +504,21 @@ function renderCanvasFrame(frameIndex) {
     drawX = 0;
     drawY = (height - drawH) / 2;
   }
+
+  return { width, height, drawW, drawH, drawX, drawY };
+}
+
+function renderCanvasFrame(frameIndex) {
+  if (!canvas || !ctx) return;
+  const metrics = getCanvasDrawMetrics();
+  const { width, height, drawW, drawH, drawX, drawY } = metrics;
+
+  // Clear with void background color
+  ctx.fillStyle = '#030303';
+  ctx.fillRect(0, 0, width, height);
+
+  const img = getBestAvailableFrame(state.activeCategory, frameIndex);
+  if (!img) return;
 
   // Draw image
   ctx.drawImage(img, drawX, drawY, drawW, drawH);
@@ -441,9 +537,237 @@ function renderCanvasFrame(frameIndex) {
 }
 
 /* ==========================================================================
+   2b. Precision Callout Markers & Component Detail Drawer Engine
+   ========================================================================== */
+
+// Stage 0: Hero Title Entrance & Docking (0–8% scroll)
+function updateHeroTitleDocking(p) {
+  const heroTitleEl = document.getElementById('hero-docking-title');
+  if (!heroTitleEl) return;
+
+  if (state.activeCategory !== 'headphones') {
+    heroTitleEl.style.display = 'none';
+    return;
+  }
+
+  heroTitleEl.style.display = 'block';
+
+  // 0–8% scroll range
+  if (p <= 0.08) {
+    const dockP = Math.max(0, Math.min(1, p / 0.08));
+    const ease = 1 - Math.pow(1 - dockP, 3);
+
+    const startTop = window.innerHeight * 0.5;
+    const targetTop = 76; // fixed position near top of viewport beneath navbar
+    const currentTop = startTop + (targetTop - startTop) * ease;
+
+    // Scale down from 1.0 to 0.40 (desktop 56px -> ~22px, mobile 32px -> ~13px)
+    const scale = 1.0 - ease * 0.60;
+
+    // Opacity gently reduces from 1.0 to 0.70
+    const opacity = 1.0 - ease * 0.30;
+
+    heroTitleEl.style.top = `${currentTop.toFixed(1)}px`;
+    heroTitleEl.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+    heroTitleEl.style.opacity = opacity.toFixed(3);
+
+    if (dockP < 0.45) {
+      heroTitleEl.textContent = 'Welcome to the SONY Headphones page.';
+      heroTitleEl.style.letterSpacing = '-0.03em';
+    } else {
+      heroTitleEl.textContent = 'SONY HEADPHONES';
+      heroTitleEl.style.letterSpacing = '0.22em';
+    }
+  } else {
+    // Docked state for entire remainder of pinned scroll
+    heroTitleEl.style.top = '76px';
+    heroTitleEl.style.transform = 'translate(-50%, -50%) scale(0.40)';
+    heroTitleEl.style.opacity = '0.70';
+    heroTitleEl.textContent = 'SONY HEADPHONES';
+    heroTitleEl.style.letterSpacing = '0.22em';
+  }
+}
+
+// Stage 2: Precision Component Callouts (SVG Bounding Boxes & Leader Lines)
+function updateCallouts(p) {
+  const overlayLayer = document.getElementById('callout-overlay-layer');
+  const bbox = document.getElementById('callout-bbox');
+  const line = document.getElementById('callout-line');
+  const anchorDot = document.getElementById('callout-anchor-dot');
+  const card = document.getElementById('component-callout-card');
+  const nameLabel = document.getElementById('callout-component-name');
+
+  if (!overlayLayer || !bbox || !line || !anchorDot || !card) return;
+
+  // Callouts are active ONLY on Headphones category
+  if (state.activeCategory !== 'headphones') {
+    bbox.style.opacity = '0';
+    line.style.opacity = '0';
+    anchorDot.style.opacity = '0';
+    card.classList.remove('visible');
+    state.activeCalloutKey = null;
+    return;
+  }
+
+  // Find active component: STRICT RULE: Exactly ONE callout visible at any given scroll position
+  let activeKey = null;
+  for (const key of Object.keys(HEADPHONES_COMPONENTS)) {
+    const comp = HEADPHONES_COMPONENTS[key];
+    if (p >= comp.startP && p <= comp.endP) {
+      activeKey = key;
+      break;
+    }
+  }
+
+  if (!activeKey) {
+    // Fast fade-out (150ms)
+    bbox.style.opacity = '0';
+    line.style.opacity = '0';
+    anchorDot.style.opacity = '0';
+    card.classList.remove('visible');
+    state.activeCalloutKey = null;
+    return;
+  }
+
+  state.activeCalloutKey = activeKey;
+  const comp = HEADPHONES_COMPONENTS[activeKey];
+  const metrics = getCanvasDrawMetrics();
+  const { width, height, drawW, drawH, drawX, drawY } = metrics;
+
+  if (drawW <= 0 || drawH <= 0) return;
+
+  // Calculate pixel coordinates for Bounding Box
+  const boxX = drawX + comp.box.normX * drawW;
+  const boxY = drawY + comp.box.normY * drawH;
+  const boxW = comp.box.normW * drawW;
+  const boxH = comp.box.normH * drawH;
+
+  bbox.setAttribute('x', boxX.toFixed(1));
+  bbox.setAttribute('y', boxY.toFixed(1));
+  bbox.setAttribute('width', boxW.toFixed(1));
+  bbox.setAttribute('height', boxH.toFixed(1));
+  bbox.style.opacity = '1';
+
+  // Anchor dot on component bounding box edge
+  const anchorX = drawX + comp.anchor.normX * drawW;
+  const anchorY = drawY + comp.anchor.normY * drawH;
+
+  anchorDot.setAttribute('cx', anchorX.toFixed(1));
+  anchorDot.setAttribute('cy', anchorY.toFixed(1));
+  anchorDot.style.opacity = '1';
+
+  // Position Card
+  let cardX = drawX + comp.card.normX * drawW;
+  let cardY = drawY + comp.card.normY * drawH;
+
+  // Viewport bounds checking so card is never clipped
+  const cardMaxX = width - 240;
+  if (cardX > cardMaxX) cardX = cardMaxX;
+  if (cardX < 20) cardX = 20;
+  if (cardY < 80) cardY = 80;
+  if (cardY > height - 130) cardY = height - 130;
+
+  card.style.left = `${cardX.toFixed(1)}px`;
+  card.style.top = `${cardY.toFixed(1)}px`;
+  if (nameLabel) nameLabel.textContent = comp.label;
+  card.classList.add('visible');
+
+  // Leader line running from label box into bounding box anchor dot
+  const lineStartX = cardX;
+  const lineStartY = cardY + 16;
+
+  line.setAttribute('x1', lineStartX.toFixed(1));
+  line.setAttribute('y1', lineStartY.toFixed(1));
+  line.setAttribute('x2', anchorX.toFixed(1));
+  line.setAttribute('y2', anchorY.toFixed(1));
+  line.style.opacity = '1';
+}
+
+// Stage 3: Slide-In Component Detail Drawer Controller
+function initComponentDrawer() {
+  const detailsBtn = document.getElementById('callout-details-btn');
+  const drawer = document.getElementById('component-detail-drawer');
+  const backdrop = document.getElementById('drawer-backdrop');
+  const closeBtn = document.getElementById('drawer-close-btn');
+  const dismissLink = document.getElementById('drawer-dismiss-link');
+
+  if (detailsBtn) {
+    detailsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openComponentDrawer(state.activeCalloutKey || 'pcb');
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeComponentDrawer();
+    });
+  }
+
+  if (dismissLink) {
+    dismissLink.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeComponentDrawer();
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', () => {
+      closeComponentDrawer();
+    });
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && state.isDrawerOpen) {
+      closeComponentDrawer();
+    }
+  });
+}
+
+function openComponentDrawer(key) {
+  const comp = HEADPHONES_COMPONENTS[key] || HEADPHONES_COMPONENTS.pcb;
+  const drawer = document.getElementById('component-detail-drawer');
+  const backdrop = document.getElementById('drawer-backdrop');
+  const title = document.getElementById('drawer-title');
+  const desc = document.getElementById('drawer-desc');
+  const specsContainer = document.getElementById('drawer-specs');
+
+  if (!drawer) return;
+
+  state.isDrawerOpen = true;
+
+  if (title) title.textContent = comp.label;
+  if (desc) desc.textContent = comp.desc;
+  if (specsContainer && comp.specs) {
+    specsContainer.innerHTML = comp.specs.map(s => `
+      <div class="drawer-spec-row">
+        <span class="drawer-spec-label">${s.label}</span>
+        <span class="drawer-spec-value">${s.val}</span>
+      </div>
+    `).join('');
+  }
+
+  drawer.classList.add('open');
+  if (backdrop) backdrop.classList.add('open');
+  playHapticSound(720, 0.08);
+}
+
+function closeComponentDrawer() {
+  const drawer = document.getElementById('component-detail-drawer');
+  const backdrop = document.getElementById('drawer-backdrop');
+
+  state.isDrawerOpen = false;
+  if (drawer) drawer.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('open');
+  playHapticSound(480, 0.06);
+}
+
+/* ==========================================================================
    3. Scrollytelling Engine & Frame Mapping
    ========================================================================== */
 function calculateScrollProgress() {
+  if (state.isDrawerOpen) return; // Pause canvas scroll-scrubbing while drawer is open
   const container = document.getElementById('scrollytelling-container');
   if (!container) return;
 
@@ -457,31 +781,76 @@ function calculateScrollProgress() {
 
 // Animation Loop (Lerped 60-120fps scrubbing)
 function animationLoop() {
-  // Lerp progress for buttery feel
-  state.currentProgress += (state.targetProgress - state.currentProgress) * 0.12;
+  if (!state.isDrawerOpen) {
+    // Lerp progress for buttery feel
+    state.currentProgress += (state.targetProgress - state.currentProgress) * 0.12;
 
-  // Frame mapping logic:
-  // 0.00 -> 0.85: forwards from 1 -> 300 (explode, disassembly)
-  // 0.85 -> 0.92: reverse from 300 -> 1 (reassemble back into hero resting pose)
-  // 0.92 -> 1.00: hold static at frame 1 (clean visual anchor before unpinning)
-  let targetFrame;
-  const p = state.currentProgress;
+    const p = state.currentProgress;
 
-  if (p <= 0.85) {
-    const normP = p / 0.85;
-    targetFrame = 1 + normP * (TOTAL_FRAMES - 1);
-  } else if (p <= 0.92) {
-    const reassembleP = (p - 0.85) / 0.07;
-    targetFrame = TOTAL_FRAMES - reassembleP * (TOTAL_FRAMES - 1);
-  } else {
-    targetFrame = 1;
-  }
+    // Stage 0: Docking Hero Title update
+    updateHeroTitleDocking(p);
 
-  const roundedFrame = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(targetFrame)));
+    // Stage 1: Canvas Entrance (Headphones 8–15% scroll)
+    if (canvas) {
+      if (state.activeCategory === 'headphones') {
+        if (p < 0.08) {
+          canvas.style.opacity = '0';
+          canvas.style.transform = 'scale(0.96)';
+        } else if (p < 0.15) {
+          const enterP = (p - 0.08) / 0.07;
+          const easeEnter = 1 - Math.pow(1 - enterP, 2);
+          canvas.style.opacity = easeEnter.toFixed(3);
+          canvas.style.transform = `scale(${(0.96 + 0.04 * easeEnter).toFixed(4)})`;
+        } else {
+          canvas.style.opacity = '1';
+          canvas.style.transform = 'scale(1)';
+        }
+      } else {
+        canvas.style.opacity = '1';
+        canvas.style.transform = 'scale(1)';
+      }
+    }
 
-  if (roundedFrame !== state.currentFrameIndex) {
-    state.currentFrameIndex = roundedFrame;
-    renderCanvasFrame(state.currentFrameIndex);
+    // Frame mapping logic:
+    let targetFrame;
+    if (state.activeCategory === 'headphones') {
+      // Stage 1: 0.00 -> 0.15 hold frame 1
+      // Stage 2: 0.15 -> 0.88 forwards from 1 -> 300 (disassembly & exploded)
+      // Stage 4: 0.88 -> 0.95 reverse from 300 -> 1 (reassemble back to hero)
+      // Stage 4: 0.95 -> 1.00 hold static at frame 1 before releasing
+      if (p < 0.15) {
+        targetFrame = 1;
+      } else if (p <= 0.88) {
+        const normP = (p - 0.15) / (0.88 - 0.15);
+        targetFrame = 1 + normP * (TOTAL_FRAMES - 1);
+      } else if (p <= 0.95) {
+        const reassembleP = (p - 0.88) / 0.07;
+        targetFrame = TOTAL_FRAMES - reassembleP * (TOTAL_FRAMES - 1);
+      } else {
+        targetFrame = 1;
+      }
+    } else {
+      // Standard progression for Camera & Phones
+      if (p <= 0.85) {
+        const normP = p / 0.85;
+        targetFrame = 1 + normP * (TOTAL_FRAMES - 1);
+      } else if (p <= 0.92) {
+        const reassembleP = (p - 0.85) / 0.07;
+        targetFrame = TOTAL_FRAMES - reassembleP * (TOTAL_FRAMES - 1);
+      } else {
+        targetFrame = 1;
+      }
+    }
+
+    const roundedFrame = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(targetFrame)));
+
+    if (roundedFrame !== state.currentFrameIndex) {
+      state.currentFrameIndex = roundedFrame;
+      renderCanvasFrame(state.currentFrameIndex);
+    }
+
+    // Stage 2: Update precision component callouts
+    updateCallouts(p);
   }
 
   requestAnimationFrame(animationLoop);
@@ -528,8 +897,9 @@ function switchCategory(targetCategory, pushHistory = true) {
   const product = PRODUCTS[targetCategory];
   const oldCategory = state.activeCategory;
 
-  // 1. Close dropdown menu immediately (160ms)
+  // 1. Close dropdown menu immediately (160ms) and close detail drawer
   closeCategoryMenu();
+  closeComponentDrawer();
 
   // 2. Crossfade navbar pill badge to new product name (300ms)
   const pill = document.getElementById('nav-product-pill');
@@ -585,6 +955,10 @@ function switchCategory(targetCategory, pushHistory = true) {
     state.currentProgress = 0;
     state.targetProgress = 0;
     state.currentFrameIndex = 1;
+
+    closeComponentDrawer();
+    updateHeroTitleDocking(0);
+    updateCallouts(0);
 
     // A. Update Document Title & Metadata
     document.title = `${product.fullName} | ${product.tagline}`;
@@ -1290,6 +1664,8 @@ window.addEventListener('DOMContentLoaded', () => {
   initColorways();
   initPreorderModal();
   initWebAudio();
+  initComponentDrawer();
+  updateHeroTitleDocking(0);
 
   window.addEventListener('scroll', calculateScrollProgress, { passive: true });
   window.addEventListener('resize', resizeCanvas, { passive: true });

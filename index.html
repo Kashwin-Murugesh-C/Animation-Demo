@@ -149,17 +149,80 @@
   <!-- Fullscreen Transparent Backdrop Click-Catcher (z-45) -->
   <div id="dropdown-backdrop" class="dropdown-backdrop" aria-hidden="true"></div>
 
-  <!-- MAIN SCROLLYTELLING CONTAINER (PURE PRODUCT ANIMATION ONLY, ZERO OVERLAYS) -->
+  <!-- MAIN SCROLLYTELLING CONTAINER -->
   <section id="scrollytelling-container" class="relative w-full" style="height: 480vh;">
-    <!-- Pinned Sticky Viewport: Pure edge-free product canvas -->
+    <!-- Pinned Sticky Viewport: Pure edge-free product canvas with precision callouts -->
     <div id="sticky-viewport" class="sticky top-0 w-full h-screen overflow-hidden bg-[#030303] flex items-center justify-center">
       <!-- Branded Loading Progress Indicator on category swap -->
       <div id="category-swap-loader"></div>
 
+      <!-- Stage 0: Docking Hero Title (0–8% scroll) -->
+      <div id="hero-docking-title" class="hero-docking-title">
+        Welcome to the SONY Headphones page.
+      </div>
+
       <!-- HTML5 Canvas for Image Sequence (Pure Visual Only) -->
       <canvas id="product-canvas" class="relative z-10 w-full h-full object-contain block"></canvas>
+
+      <!-- Stage 2: Precision Component Callout Overlay Layer (SVG Bounding Boxes & Leader Lines) -->
+      <div id="callout-overlay-layer" class="callout-overlay-layer" aria-hidden="true">
+        <svg id="callout-svg" class="callout-svg">
+          <!-- Animated Bounding Box -->
+          <rect id="callout-bbox" class="callout-bbox" rx="8" ry="8" x="-1000" y="-1000" width="0" height="0" />
+          <!-- Animated Leader Line -->
+          <line id="callout-line" class="callout-line" x1="-1000" y1="-1000" x2="-1000" y2="-1000" />
+          <!-- Anchor Dot on component edge -->
+          <circle id="callout-anchor-dot" class="callout-anchor-dot" cx="-1000" cy="-1000" r="3.5" />
+        </svg>
+
+        <!-- Floating Component Label & View More Details Button -->
+        <div id="component-callout-card" class="component-callout-card">
+          <div id="callout-label-box" class="callout-label-box">
+            <span id="callout-component-name">Circuit Board (PCB)</span>
+          </div>
+          <button id="callout-details-btn" class="callout-details-btn" type="button" aria-haspopup="dialog" aria-label="View more details about this component">
+            <span>View More Details</span>
+            <svg class="w-3 h-3 text-sony-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
   </section>
+
+  <!-- Stage 3: Slide-In Component Detail Drawer -->
+  <div id="drawer-backdrop" class="drawer-backdrop" aria-hidden="true"></div>
+  <aside id="component-detail-drawer" class="component-detail-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+    <div class="flex items-center justify-between mb-4">
+      <span class="text-[11px] font-mono uppercase tracking-widest text-sony-cyan">— COMPONENT DETAIL</span>
+      <button id="drawer-close-btn" class="drawer-close-btn" aria-label="Close component detail drawer">
+        <svg class="w-5 h-5 text-white/70 hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <h3 id="drawer-title" class="text-xl font-bold tracking-tight text-white mb-2">
+      Circuit Board (PCB)
+    </h3>
+    <p id="drawer-desc" class="text-sm text-white/60 leading-relaxed mb-6">
+      The central circuit board managing Bluetooth connectivity, noise-cancelling processing, and power distribution.
+    </p>
+    
+    <div class="mb-6">
+      <h4 class="text-xs font-mono uppercase tracking-wider text-white/40 mb-3">Technical Specifications</h4>
+      <div id="drawer-specs" class="space-y-2.5">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-white/10 flex items-center justify-between">
+      <span class="text-[10px] font-mono text-white/30 uppercase tracking-wider">Sony Architecture</span>
+      <button id="drawer-dismiss-link" class="text-xs font-medium text-white/60 hover:text-sony-cyan transition-colors">
+        Close Window &times;
+      </button>
+    </div>
+  </aside>
 
   <!-- STORY ACTS SECTIONS: IN NORMAL DOCUMENT FLOW BENEATH CANVAS -->
   <section id="story-acts-container" class="story-acts-container">

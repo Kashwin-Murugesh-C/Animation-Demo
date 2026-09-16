@@ -703,6 +703,237 @@ body {
   display: block;
 }
 
+/* ==========================================================================
+   Stage 0: Docking Hero Title (0–8% Scroll)
+   ========================================================================== */
+.hero-docking-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.95);
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 25;
+  opacity: 0;
+  animation: heroTitleEntrance 700ms cubic-bezier(0.22, 1, 0.36, 1) 150ms forwards;
+  will-change: top, transform, opacity, font-size;
+  transition: color 0.3s ease;
+}
+
+@keyframes heroTitleEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ==========================================================================
+   Stage 2: Precision Component Callouts (SVG Bounding Box & Leader Line)
+   ========================================================================== */
+.callout-overlay-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+  overflow: hidden;
+}
+
+.callout-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.callout-bbox {
+  stroke: #00D6FF;
+  stroke-width: 1.5;
+  stroke-opacity: 0.75;
+  fill: none;
+  rx: 8;
+  ry: 8;
+  filter: drop-shadow(0 0 8px rgba(0, 214, 255, 0.4));
+  transition: opacity 0.2s ease;
+}
+
+.callout-line {
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 1.2;
+  stroke-dasharray: 4 2;
+  fill: none;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.8));
+  transition: opacity 0.18s ease;
+}
+
+.callout-anchor-dot {
+  fill: #00D6FF;
+  filter: drop-shadow(0 0 6px #00D6FF);
+  transition: opacity 0.15s ease;
+}
+
+.component-callout-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  will-change: opacity, transform, left, top;
+}
+
+.component-callout-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.callout-label-box {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+
+.callout-details-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+}
+
+.callout-details-btn:hover {
+  background: rgba(0, 214, 255, 0.10);
+  border-color: #00D6FF;
+  color: #00D6FF;
+  box-shadow: 0 0 16px rgba(0, 214, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.callout-details-btn:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Stage 3: Slide-In Component Detail Drawer
+   ========================================================================== */
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease;
+}
+
+.drawer-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.component-detail-drawer {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translate(125%, -50%);
+  width: 400px;
+  max-width: calc(100vw - 2.5rem);
+  background: rgba(10, 10, 12, 0.97);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1rem;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  padding: 1.75rem;
+  z-index: 55;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1), opacity 280ms ease-out;
+}
+
+.component-detail-drawer.open {
+  transform: translate(0, -50%);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.drawer-close-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.drawer-close-btn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.drawer-spec-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.drawer-spec-label {
+  font-family: ui-monospace, SFMono-Regular, monospace;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.drawer-spec-value {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+}
+
 /* Story Acts Sections in Normal Document Flow Below Canvas */
 .story-acts-container {
   position: relative;
