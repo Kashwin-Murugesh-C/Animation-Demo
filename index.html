@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sony WH-1000XM6 | Silence, perfected.</title>
-  <meta name="description" content="Experience Sony WH-1000XM6 wireless noise-cancelling headphones. Re-engineered with Dual QN3 processors, 40mm bio-cellulose drivers, and industry-leading adaptive silence." />
+  <title>Sony Xperia Pro-I | The 1.0-Type Sensor Camera Smartphone</title>
+  <meta name="description" content="Experience Sony Xperia Pro-I smartphone. Built with a genuine 1.0-type Exmor RS image sensor, ZEISS Tessar optics, dual aperture F2.0 / F4.0, and 4K 120fps video recording." />
   
   <!-- Preconnect to Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,8 +22,8 @@
   <div id="preloader" class="fixed inset-0 z-50 bg-[#030303] flex flex-col items-center justify-center transition-opacity duration-700">
     <div class="flex flex-col items-center max-w-sm px-6 text-center">
       <div class="sony-brand-logo mb-6 tracking-[0.35em] text-white/90 text-sm font-semibold uppercase">SONY</div>
-      <div class="text-2xl font-bold tracking-tight text-white mb-2">WH-1000XM6</div>
-      <div class="text-xs uppercase tracking-widest text-white/40 mb-8">Flagship Noise Cancelling</div>
+      <div class="text-2xl font-bold tracking-tight text-white mb-2" id="preloader-title">XPERIA PRO-I</div>
+      <div class="text-xs uppercase tracking-widest text-white/40 mb-8" id="preloader-subtitle">The 1.0-Type Sensor Camera Smartphone</div>
       
       <!-- Audio Wave Loader Animation -->
       <div class="audio-wave-bars flex items-center justify-center gap-1.5 h-10 mb-6" aria-hidden="true">
@@ -64,10 +64,11 @@
         </svg>
       </button>
 
-      <!-- Bold SONY Wordmark in uppercase tracking-wide -->
+      <!-- Bold SONY Wordmark in uppercase tracking-wide with active product pill -->
       <a href="#overview" class="sony-wordmark">
         SONY
       </a>
+      <span id="nav-product-pill" class="nav-product-pill">XPERIA PRO-I</span>
 
       <!-- DROPDOWN PANEL (Floating card directly beneath, left-aligned under hamburger) -->
       <div
@@ -82,7 +83,7 @@
               class="category-item-btn"
               role="menuitem"
               data-category="headphones"
-              aria-current="true"
+              aria-current="false"
             >
               <span class="category-dot" aria-hidden="true"></span>
               <span>HEADPHONES</span>
@@ -101,10 +102,10 @@
           </li>
           <li role="none">
             <button
-              class="category-item-btn"
+              class="category-item-btn active"
               role="menuitem"
               data-category="phones"
-              aria-current="false"
+              aria-current="true"
             >
               <span class="category-dot" aria-hidden="true"></span>
               <span>PHONES</span>
@@ -123,13 +124,13 @@
   <!-- MAIN SCROLLYTELLING CONTAINER -->
   <section id="scrollytelling-container" class="relative w-full" style="height: 480vh;">
     <!-- Pinned Sticky Viewport: Pure edge-free product canvas with precision callouts -->
-    <div id="sticky-viewport" class="sticky top-0 w-full h-screen overflow-hidden bg-[#030303] flex items-center justify-center">
+    <div id="sticky-viewport" class="sticky top-0 w-full h-screen overflow-hidden bg-[#050505] flex items-center justify-center">
       <!-- Branded Loading Progress Indicator on category swap -->
       <div id="category-swap-loader"></div>
 
-      <!-- Stage 0: Hero Title (00-0 to 09-0 scroll) -->
+      <!-- Stage 0: Hero Title -->
       <div id="hero-docking-title" class="hero-docking-title">
-        Sony WH-1000XM6
+        Sony Xperia Pro-I
       </div>
 
       <!-- HTML5 Canvas for Image Sequence (Pure Visual Only) -->
@@ -189,12 +190,88 @@
 
     <div class="pt-4 border-t border-white/10 flex items-center justify-between">
       <span class="text-[10px] font-mono text-white/30 uppercase tracking-wider">Sony Architecture</span>
+      <button id="drawer-bottom-close-btn" class="drawer-bottom-close-btn" type="button">Close (×)</button>
     </div>
   </aside>
 
   <!-- STORY ACTS SECTIONS: IN NORMAL DOCUMENT FLOW BENEATH CANVAS -->
   <section id="story-acts-container" class="story-acts-container">
     
+    <!-- INTERACTIVE COMPONENT GALLERY SECTION (Under Animation, Above The Next Standard in Silence) -->
+    <div id="component-gallery-section" class="component-gallery-section">
+      <div class="gallery-container">
+        <!-- Section Header -->
+        <div class="gallery-header">
+          <div class="act-eyebrow-tag">
+            <span class="w-1.5 h-1.5 rounded-full bg-sony-cyan animate-pulse"></span>
+            <span id="gallery-eyebrow">COMPONENT ARCHITECTURE GALLERY</span>
+          </div>
+          <h2 id="gallery-title" class="gallery-title">
+            Explore Labeled Components
+          </h2>
+          <p id="gallery-subtitle" class="gallery-subtitle">
+            By default showing the full animation. Click any small labeled component below to view its high-definition photo and engineering specifications.
+          </p>
+        </div>
+
+        <!-- Main Viewer Stage -->
+        <div class="gallery-viewer-stage" id="gallery-viewer-stage">
+          <!-- Live Animation View (Default) -->
+          <div id="gallery-animation-view" class="gallery-view-pane active">
+            <canvas id="gallery-canvas" class="gallery-canvas" width="832" height="464"></canvas>
+            <div class="gallery-status-badge">
+              <span class="w-2 h-2 rounded-full bg-sony-cyan animate-ping"></span>
+              <span class="w-2 h-2 rounded-full bg-sony-cyan absolute"></span>
+              <span class="ml-2.5 font-mono text-[11px] tracking-wider uppercase text-white/90">3D Interactive Animation</span>
+            </div>
+            <div class="gallery-animation-controls">
+              <button id="gallery-play-toggle-btn" class="gallery-pill-btn" type="button" aria-label="Pause or play animation">
+                <svg id="gallery-pause-icon" class="w-3.5 h-3.5 text-sony-cyan" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+                <svg id="gallery-play-icon" class="w-3.5 h-3.5 text-sony-cyan hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="gallery-play-text">Pause</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Static Component Photo View -->
+          <div id="gallery-photo-view" class="gallery-view-pane">
+            <img id="gallery-photo-img" class="gallery-photo-img" src="" alt="Selected Component Photo" />
+            <!-- Precision Mapping Callout Overlay on Photo -->
+            <svg id="gallery-callout-svg" class="gallery-callout-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <rect id="gallery-callout-box" class="gallery-callout-box" x="0" y="0" width="0" height="0" rx="1.5" />
+              <line id="gallery-callout-line" class="gallery-callout-line" x1="0" y1="0" x2="0" y2="0" />
+              <ellipse id="gallery-callout-dot" class="gallery-callout-dot" cx="0" cy="0" rx="0.55" ry="0.95" />
+            </svg>
+            <div class="gallery-photo-overlay">
+              <div class="gallery-photo-info">
+                <span class="text-[11px] font-mono uppercase tracking-widest text-sony-cyan mb-1.5 block">— LABELED COMPONENT DETAIL</span>
+                <h3 id="gallery-photo-name" class="text-xl sm:text-2xl font-bold text-white mb-2">Component Name</h3>
+                <p id="gallery-photo-desc" class="text-xs sm:text-sm text-white/70 max-w-xl line-clamp-2 sm:line-clamp-3 mb-3"></p>
+                <div id="gallery-photo-specs" class="gallery-photo-specs-row"></div>
+              </div>
+              <div class="gallery-photo-actions">
+                <button id="gallery-return-anim-btn" class="gallery-pill-btn" type="button">
+                  <svg class="w-3.5 h-3.5 text-sony-cyan" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                  <span>Return to Animation</span>
+                </button>
+                <button id="gallery-open-drawer-btn" class="gallery-pill-btn primary" type="button">
+                  <span>View Full Specs</span>
+                  <svg class="w-3 h-3 text-sony-cyan" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Small Square Thumbnails Strip (Like the user's uploaded picture!) -->
+        <div class="gallery-thumbnails-wrapper">
+          <div id="gallery-thumbnails-strip" class="gallery-thumbnails-strip" role="tablist" aria-label="Component selector">
+            <!-- Dynamically populated per category with small square buttons -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- ACT 1: HERO & VISION -->
     <div id="act-hero" class="story-act-block">
       <div class="story-act-inner">
